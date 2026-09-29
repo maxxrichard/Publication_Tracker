@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive research publication pipeline dashboard generated from Excel.">
+  <meta name="theme-color" content="#f4f7fb">
+  <title>Publication Pipeline</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/dashboard.css">
+  <script>
+    const savedTheme = localStorage.getItem("publication-theme");
+    const preferredTheme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.dataset.theme = savedTheme || preferredTheme;
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to dashboard</a>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="Publication Pipeline home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 17v-4l5-5 4 4 7-8"/><circle cx="4" cy="17" r="1.5"/><circle cx="9" cy="8" r="1.5"/><circle cx="13" cy="12" r="1.5"/><circle cx="20" cy="4" r="1.5"/></svg>
+        </span>
+        <span><strong>Publication</strong><small>Pipeline</small></span>
+      </a>
+
+      <nav class="header-actions" aria-label="Dashboard actions">
+        <span class="sync-state"><span class="sync-dot" aria-hidden="true"></span>Excel synced</span>
+        <a class="button button-secondary" href="data/publications.xlsx" download>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+          <span>Download Excel</span>
+        </a>
+        <button class="icon-button" id="themeToggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+          <svg class="theme-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+          <svg class="theme-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M21 14.1A9 9 0 0 1 9.9 3a9 9 0 1 0 11.1 11.1Z"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="dashboard-shell" tabindex="-1">
+    <section class="page-intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Research operations</p>
+        <h1 id="page-title">Publication dashboard</h1>
+        <p class="page-description">Track deadlines, submission progress, and publication outcomes from one Excel workbook.</p>
+      </div>
+      <div class="updated-panel">
+        <span>Data last updated</span>
+        <strong id="lastUpdated">Loading…</strong>
+      </div>
+    </section>
+
+    <div id="dataError" class="error-banner" role="alert" hidden>
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 4h.01"/></svg>
+      <div><strong>Could not load publication data.</strong><span>Serve this folder through a web server or GitHub Pages, then refresh.</span></div>
+      <button type="button" id="retryButton">Retry</button>
+    </div>
+
+    <section class="metrics-grid" aria-label="Publication summary">
+      <article class="metric-card metric-total">
+        <div class="metric-top"><span>Total papers</span><span class="metric-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v5h5M10 13h6m-6 4h6"/></svg></span></div>
+        <strong id="totalCount">—</strong>
+        <p id="cycleRange">Across all cycles</p>
+      </article>
+      <article class="metric-card metric-accepted">
+        <div class="metric-top"><span>Accepted</span><span class="metric-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.7 2.7L16.5 9"/></svg></span></div>
+        <strong id="acceptedCount">—</strong>
+        <p id="acceptedShare">— of the portfolio</p>
+      </article>
+      <article class="metric-card metric-submitted">
+        <div class="metric-top"><span>Submitted</span><span class="metric-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M4 12 20 4l-4 16-4-6-8-2Z"/><path d="m12 14 8-10"/></svg></span></div>
+        <strong id="submittedCount">—</strong>
+        <p>In the review cycle</p>
+      </article>
+      <article class="metric-card metric-planned">
+        <div class="metric-top"><span>Planned work</span><span class="metric-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-12 4h3m2 0h3"/></svg></span></div>
+        <strong id="plannedCount">—</strong>
+        <p>In the writing pipeline</p>
+      </article>
+    </section>
+
+    <section class="insights-grid" aria-label="Deadline and portfolio insights">
+      <article class="panel deadline-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Next milestone</p><h2>Upcoming deadline</h2></div>
+          <span class="deadline-state" id="nextDeadlineState">Loading</span>
+        </div>
+        <div id="nextDeadline" class="deadline-content" aria-live="polite">
+          <div class="skeleton skeleton-title"></div><div class="skeleton skeleton-line"></div>
+        </div>
+      </article>
+
+      <article class="panel portfolio-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Portfolio health</p><h2>Status distribution</h2></div>
+          <span id="portfolioTotal" class="panel-meta">— papers</span>
+        </div>
+        <div id="statusBars" class="status-bars" role="img" aria-label="Publication status distribution"></div>
+        <div id="statusLegend" class="status-legend"></div>
+      </article>
+    </section>
+
+    <section class="panel tracker-panel" aria-labelledby="tracker-title">
+      <div class="tracker-heading">
+        <div>
+          <p class="eyebrow">Complete portfolio</p>
+          <h2 id="tracker-title">Publication tracker</h2>
+          <p id="resultSummary">Loading publications…</p>
+        </div>
+        <button class="button button-quiet" id="clearFilters" type="button" hidden>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          Clear filters
+        </button>
+      </div>
+
+      <div class="filter-bar" aria-label="Publication filters">
+        <label class="search-control">
+          <span class="visually-hidden">Search publications</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input id="searchInput" type="search" placeholder="Search papers, venues, or next steps" autocomplete="off">
+        </label>
+        <label class="select-control"><span>Status</span><select id="statusFilter"><option value="">All statuses</option></select></label>
+        <label class="select-control"><span>Cycle</span><select id="cycleFilter"><option value="">All cycles</option></select></label>
+        <label class="select-control"><span>Type</span><select id="typeFilter"><option value="">All types</option></select></label>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Publications with sortable columns. Select a row for complete details.</caption>
+          <thead>
+            <tr>
+              <th scope="col" data-sort="paperTitle"><button type="button">Paper <span aria-hidden="true"></span></button></th>
+              <th scope="col" data-sort="venue"><button type="button">Venue <span aria-hidden="true"></span></button></th>
+              <th scope="col" data-sort="deadline" aria-sort="ascending"><button type="button">Deadline <span aria-hidden="true">↑</span></button></th>
+              <th scope="col" data-sort="status"><button type="button">Status <span aria-hidden="true"></span></button></th>
+              <th scope="col" data-sort="targetMonth"><button type="button">Target <span aria-hidden="true"></span></button></th>
+              <th scope="col" data-sort="priority"><button type="button">Priority <span aria-hidden="true"></span></button></th>
+              <th scope="col">Next step</th>
+              <th scope="col"><span class="visually-hidden">Open details</span></th>
+            </tr>
+          </thead>
+          <tbody id="publicationRows"></tbody>
+        </table>
+      </div>
+
+      <div id="publicationCards" class="publication-cards"></div>
+
+      <div id="emptyState" class="empty-state" hidden>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6"/></svg>
+        <h3>No publications match</h3>
+        <p>Try changing a filter or clearing the search.</p>
+        <button class="button button-secondary" type="button" id="emptyReset">Clear filters</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Publication Pipeline <span aria-hidden="true">·</span> Excel-powered research operations</p>
+    <a href="data/publications.xlsx">View source workbook</a>
+  </footer>
+
+  <dialog id="publicationDialog" aria-labelledby="dialogTitle">
+    <div class="dialog-shell">
+      <div class="dialog-header">
+        <div><p class="eyebrow" id="dialogEyebrow">Publication details</p><h2 id="dialogTitle">Paper title</h2></div>
+        <button class="icon-button" id="closeDialog" type="button" aria-label="Close publication details">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="dialogStatus" class="dialog-status"></div>
+      <dl id="dialogDetails" class="detail-grid"></dl>
+      <div class="dialog-notes"><h3>Notes</h3><p id="dialogNotes">No notes added.</p></div>
+      <div class="dialog-actions">
+        <a class="button button-primary" id="dialogPaperLink" href="#" target="_blank" rel="noreferrer" hidden>Open paper</a>
+        <button class="button button-secondary" id="dialogDone" type="button">Done</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="assets/dashboard.js" defer></script>
+</body>
+</html>
+
