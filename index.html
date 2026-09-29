@@ -1,186 +1,198 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Interactive research publication pipeline dashboard generated from Excel.">
-  <meta name="theme-color" content="#f4f7fb">
-  <title>Publication Pipeline</title>
+  <meta name="description" content="Research publication tracker: deadlines, submissions and outcomes, generated from an Excel workbook.">
+  <meta name="theme-color" content="#111217">
+  <title>Publication Tracker</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="assets/dashboard.css" rel="stylesheet">
   <script>
-    const savedTheme = localStorage.getItem("publication-theme");
-    const preferredTheme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    document.documentElement.dataset.theme = savedTheme || preferredTheme;
+    try {
+      const saved = localStorage.getItem("publication-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    } catch (e) { /* storage unavailable */ }
   </script>
 </head>
 <body>
-  <a class="skip-link" href="#main-content">Skip to dashboard</a>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-zoom-out" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.9-3.5M4 4v4h4M4 13a8 8 0 0 0 14.9 3.5M20 20v-4h-4"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9Z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-9.5v.01"/></symbol>
+  </svg>
 
-  <header class="app-header">
-    <div class="header-inner">
-      <a class="brand" href="./" aria-label="Publication Pipeline home">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M4 17v-4l5-5 4 4 7-8"/><circle cx="4" cy="17" r="1.5"/><circle cx="9" cy="8" r="1.5"/><circle cx="13" cy="12" r="1.5"/><circle cx="20" cy="4" r="1.5"/></svg>
-        </span>
-        <span><strong>Publication</strong><small>Pipeline</small></span>
-      </a>
-
-      <nav class="header-actions" aria-label="Dashboard actions">
-        <span class="sync-state"><span class="sync-dot" aria-hidden="true"></span>Excel synced</span>
-        <a class="button button-secondary" href="data/publications.xlsx" download>
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
-          <span>Download Excel</span>
-        </a>
-        <button class="icon-button" id="themeToggle" type="button" aria-label="Switch color theme" title="Switch color theme">
-          <svg class="theme-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
-          <svg class="theme-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M21 14.1A9 9 0 0 1 9.9 3a9 9 0 1 0 11.1 11.1Z"/></svg>
-        </button>
-      </nav>
+  <header class="topnav">
+    <a class="logo" href="./" aria-label="Home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#f46800"/><path d="M9 9h9a5 5 0 0 1 0 10h-5v5H9Z M13 13v2h5a1 1 0 0 0 0-2Z" fill="#fff" fill-rule="evenodd"/></svg>
+    </a>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <span>Home</span><span class="sep">›</span><span>Dashboards</span><span class="sep">›</span><span>Research</span><span class="sep">›</span><strong>Publication tracker</strong>
+      <button class="icon-btn star" type="button" aria-label="Mark as favourite" id="starBtn"><svg><use href="#i-star"/></svg></button>
+    </nav>
+    <div class="topnav-right">
+      <span class="sync" title="Last sync from publications.xlsx"><i class="dot"></i>Excel sync <b id="lastUpdated">—</b></span>
+      <button class="icon-btn" type="button" id="themeToggle" aria-label="Switch theme"><svg><use href="#i-sun" id="themeIcon"/></svg></button>
+      <span class="avatar" title="Maxx Richard Rahman">MR</span>
     </div>
   </header>
 
-  <main id="main-content" class="dashboard-shell" tabindex="-1">
-    <section class="page-intro" aria-labelledby="page-title">
-      <div>
-        <p class="eyebrow">Research operations</p>
-        <h1 id="page-title">Publication dashboard</h1>
-        <p class="page-description">Track deadlines, submission progress, and publication outcomes from one Excel workbook.</p>
+  <div class="toolbar">
+    <div class="vars" id="vars"></div>
+    <div class="controls">
+      <a class="tb-btn" href="data/publications.xlsx" download title="Download workbook"><svg><use href="#i-download"/></svg></a>
+      <div class="tb-group">
+        <button class="tb-btn" type="button" id="rangePrev" aria-label="Move time range backward"><svg><use href="#i-chevron-left"/></svg></button>
+        <div class="dropdown">
+          <button class="tb-btn tb-range" type="button" id="rangeBtn"><svg><use href="#i-clock"/></svg><span id="rangeLabel">All time</span><svg class="caret"><use href="#i-chevron-down"/></svg></button>
+          <div class="menu menu-right" id="rangeMenu" hidden></div>
+        </div>
+        <button class="tb-btn" type="button" id="rangeNext" aria-label="Move time range forward"><svg><use href="#i-chevron-right"/></svg></button>
       </div>
-      <div class="updated-panel">
-        <span>Data last updated</span>
-        <strong id="lastUpdated">Loading…</strong>
+      <button class="tb-btn" type="button" id="zoomOut" title="Zoom out time range"><svg><use href="#i-zoom-out"/></svg></button>
+      <div class="tb-group">
+        <button class="tb-btn" type="button" id="refreshBtn" title="Refresh dashboard"><svg><use href="#i-sync"/></svg></button>
+        <div class="dropdown">
+          <button class="tb-btn" type="button" id="intervalBtn"><span id="intervalLabel">Off</span><svg class="caret"><use href="#i-chevron-down"/></svg></button>
+          <div class="menu menu-right" id="intervalMenu" hidden></div>
+        </div>
       </div>
-    </section>
-
-    <div id="dataError" class="error-banner" role="alert" hidden>
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 4h.01"/></svg>
-      <div><strong>Could not load publication data.</strong><span>Serve this folder through a web server or GitHub Pages, then refresh.</span></div>
-      <button type="button" id="retryButton">Retry</button>
     </div>
+  </div>
 
-    <section class="metrics-grid" aria-label="Publication summary">
-      <article class="metric-card metric-total">
-        <div class="metric-top"><span>Total papers</span><span class="metric-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v5h5M10 13h6m-6 4h6"/></svg></span></div>
-        <strong id="totalCount">—</strong>
-        <p id="cycleRange">Across all cycles</p>
-      </article>
-      <article class="metric-card metric-accepted">
-        <div class="metric-top"><span>Accepted</span><span class="metric-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.7 2.7L16.5 9"/></svg></span></div>
-        <strong id="acceptedCount">—</strong>
-        <p id="acceptedShare">— of the portfolio</p>
-      </article>
-      <article class="metric-card metric-submitted">
-        <div class="metric-top"><span>Submitted</span><span class="metric-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M4 12 20 4l-4 16-4-6-8-2Z"/><path d="m12 14 8-10"/></svg></span></div>
-        <strong id="submittedCount">—</strong>
-        <p>In the review cycle</p>
-      </article>
-      <article class="metric-card metric-planned">
-        <div class="metric-top"><span>Planned work</span><span class="metric-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-12 4h3m2 0h3"/></svg></span></div>
-        <strong id="plannedCount">—</strong>
-        <p>In the writing pipeline</p>
-      </article>
+  <div class="error" id="dataError" hidden>
+    <strong>Failed to load data/publications.json.</strong> Serve this folder over HTTP (for example <code>python3 -m http.server</code>) and refresh.
+    <button type="button" id="retryButton">Retry</button>
+  </div>
+
+  <main class="dashboard" id="dashboard">
+
+    <!-- Row 1 -->
+    <section class="row" data-row="overview">
+      <button class="row-title" type="button"><svg><use href="#i-chevron-down"/></svg><span id="rowTitle1">Pipeline overview</span></button>
+      <div class="grid">
+        <div class="panel" style="--w:24" data-panel="table">
+          <div class="panel-header"><h2>publications: Overview of papers</h2></div>
+          <div class="panel-body table-wrap"><table class="gtable" id="pubTable"><thead></thead><tbody></tbody></table></div>
+        </div>
+
+        <div class="panel h-chart" style="--w:5" data-panel="cumulative">
+          <div class="panel-header"><h2>Deadlines reached by status</h2></div>
+          <div class="panel-body chart"><canvas id="cumChart"></canvas></div>
+        </div>
+        <div class="panel h-chart" style="--w:5" data-panel="cycles">
+          <div class="panel-header"><h2>Papers per cycle</h2></div>
+          <div class="panel-body chart"><canvas id="cycleChart"></canvas></div>
+        </div>
+        <div class="panel h-chart" style="--w:5" data-panel="months">
+          <div class="panel-header"><h2>Deadlines per month</h2></div>
+          <div class="panel-body chart"><canvas id="monthChart"></canvas></div>
+        </div>
+        <div class="panel h-chart" style="--w:5" data-panel="venues">
+          <div class="panel-header"><h2>Venue distribution</h2></div>
+          <div class="panel-body chart"><canvas id="venueChart"></canvas></div>
+        </div>
+        <div class="panel h-chart" style="--w:4" data-panel="priority">
+          <div class="panel-header"><h2>Papers by priority</h2></div>
+          <div class="panel-body"><div class="bargauge" id="priorityGauge"></div></div>
+        </div>
+      </div>
     </section>
 
-    <section class="insights-grid" aria-label="Deadline and portfolio insights">
-      <article class="panel deadline-panel">
-        <div class="panel-heading">
-          <div><p class="eyebrow">Next milestone</p><h2>Upcoming deadline</h2></div>
-          <span class="deadline-state" id="nextDeadlineState">Loading</span>
+    <!-- Row 2 -->
+    <section class="row" data-row="details">
+      <button class="row-title" type="button"><svg><use href="#i-chevron-down"/></svg><span id="rowTitle2">Details of pipeline</span></button>
+      <div class="grid">
+        <div class="stack" style="--w:3">
+          <div class="panel" data-panel="stat-next">
+            <div class="panel-header"><h2>Next deadline</h2></div>
+            <div class="panel-body stat" id="statNext"></div>
+          </div>
+          <div class="panel" data-panel="stat-count">
+            <div class="panel-header"><h2>Papers in view</h2></div>
+            <div class="panel-body stat" id="statCount"></div>
+          </div>
+          <div class="panel" data-panel="stat-sync">
+            <div class="panel-header"><h2>Last Excel sync</h2></div>
+            <div class="panel-body stat" id="statSync"></div>
+          </div>
         </div>
-        <div id="nextDeadline" class="deadline-content" aria-live="polite">
-          <div class="skeleton skeleton-title"></div><div class="skeleton skeleton-line"></div>
+        <div class="stack stack-2" style="--w:3">
+          <div class="panel" data-panel="gauge-accept">
+            <div class="panel-header"><h2>Acceptance rate</h2></div>
+            <div class="panel-body gauge" id="gaugeAccept"></div>
+          </div>
+          <div class="panel" data-panel="gauge-decided">
+            <div class="panel-header"><h2>Decided share</h2></div>
+            <div class="panel-body gauge" id="gaugeDecided"></div>
+          </div>
         </div>
-      </article>
-
-      <article class="panel portfolio-panel">
-        <div class="panel-heading">
-          <div><p class="eyebrow">Portfolio health</p><h2>Status distribution</h2></div>
-          <span id="portfolioTotal" class="panel-meta">— papers</span>
+        <div class="panel h-detail" style="--w:6" data-panel="runway">
+          <div class="panel-header"><h2>Deadline pressure by paper</h2><span class="hint" title="Lit cells grow as a deadline gets closer (180-day window).">i</span></div>
+          <div class="panel-body"><div class="led" id="ledGauge"></div></div>
         </div>
-        <div id="statusBars" class="status-bars" role="img" aria-label="Publication status distribution"></div>
-        <div id="statusLegend" class="status-legend"></div>
-      </article>
+        <div class="panel h-detail" style="--w:5" data-panel="status">
+          <div class="panel-header"><h2>Status</h2></div>
+          <div class="panel-body"><div class="tiles" id="statusTiles"></div></div>
+        </div>
+        <div class="panel h-detail" style="--w:7" data-panel="steps">
+          <div class="panel-header"><h2>Next steps</h2></div>
+          <div class="panel-body table-wrap"><table class="gtable compact" id="stepsTable"><thead></thead><tbody></tbody></table></div>
+        </div>
+      </div>
     </section>
 
-    <section class="panel tracker-panel" aria-labelledby="tracker-title">
-      <div class="tracker-heading">
-        <div>
-          <p class="eyebrow">Complete portfolio</p>
-          <h2 id="tracker-title">Publication tracker</h2>
-          <p id="resultSummary">Loading publications…</p>
+    <!-- Row 3 -->
+    <section class="row" data-row="timeline">
+      <button class="row-title" type="button"><svg><use href="#i-chevron-down"/></svg><span>Deadline timeline</span></button>
+      <div class="grid">
+        <div class="panel" style="--w:24" data-panel="timeline">
+          <div class="panel-header"><h2>Deadlines against today</h2></div>
+          <div class="panel-body"><div class="timeline" id="timeline"></div></div>
         </div>
-        <button class="button button-quiet" id="clearFilters" type="button" hidden>
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          Clear filters
-        </button>
-      </div>
-
-      <div class="filter-bar" aria-label="Publication filters">
-        <label class="search-control">
-          <span class="visually-hidden">Search publications</span>
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-          <input id="searchInput" type="search" placeholder="Search papers, venues, or next steps" autocomplete="off">
-        </label>
-        <label class="select-control"><span>Status</span><select id="statusFilter"><option value="">All statuses</option></select></label>
-        <label class="select-control"><span>Cycle</span><select id="cycleFilter"><option value="">All cycles</option></select></label>
-        <label class="select-control"><span>Type</span><select id="typeFilter"><option value="">All types</option></select></label>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <caption class="visually-hidden">Publications with sortable columns. Select a row for complete details.</caption>
-          <thead>
-            <tr>
-              <th scope="col" data-sort="paperTitle"><button type="button">Paper <span aria-hidden="true"></span></button></th>
-              <th scope="col" data-sort="venue"><button type="button">Venue <span aria-hidden="true"></span></button></th>
-              <th scope="col" data-sort="deadline" aria-sort="ascending"><button type="button">Deadline <span aria-hidden="true">↑</span></button></th>
-              <th scope="col" data-sort="status"><button type="button">Status <span aria-hidden="true"></span></button></th>
-              <th scope="col" data-sort="targetMonth"><button type="button">Target <span aria-hidden="true"></span></button></th>
-              <th scope="col" data-sort="priority"><button type="button">Priority <span aria-hidden="true"></span></button></th>
-              <th scope="col">Next step</th>
-              <th scope="col"><span class="visually-hidden">Open details</span></th>
-            </tr>
-          </thead>
-          <tbody id="publicationRows"></tbody>
-        </table>
-      </div>
-
-      <div id="publicationCards" class="publication-cards"></div>
-
-      <div id="emptyState" class="empty-state" hidden>
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6"/></svg>
-        <h3>No publications match</h3>
-        <p>Try changing a filter or clearing the search.</p>
-        <button class="button button-secondary" type="button" id="emptyReset">Clear filters</button>
       </div>
     </section>
   </main>
 
-  <footer class="app-footer">
-    <p>Publication Pipeline <span aria-hidden="true">·</span> Excel-powered research operations</p>
-    <a href="data/publications.xlsx">View source workbook</a>
-  </footer>
+  <div class="panel-menu menu" id="panelMenu" hidden>
+    <button type="button" data-action="view"><svg><use href="#i-eye"/></svg>View<kbd>v</kbd></button>
+    <button type="button" data-action="csv"><svg><use href="#i-download"/></svg>Download CSV</button>
+  </div>
 
-  <dialog id="publicationDialog" aria-labelledby="dialogTitle">
-    <div class="dialog-shell">
-      <div class="dialog-header">
-        <div><p class="eyebrow" id="dialogEyebrow">Publication details</p><h2 id="dialogTitle">Paper title</h2></div>
-        <button class="icon-button" id="closeDialog" type="button" aria-label="Close publication details">
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
+  <div class="backdrop" id="backdrop" hidden></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <h3 id="drawerTitle">Inspect</h3>
+        <p id="drawerSub"></p>
       </div>
-      <div id="dialogStatus" class="dialog-status"></div>
-      <dl id="dialogDetails" class="detail-grid"></dl>
-      <div class="dialog-notes"><h3>Notes</h3><p id="dialogNotes">No notes added.</p></div>
-      <div class="dialog-actions">
-        <a class="button button-primary" id="dialogPaperLink" href="#" target="_blank" rel="noreferrer" hidden>Open paper</a>
-        <button class="button button-secondary" id="dialogDone" type="button">Done</button>
-      </div>
+      <button class="icon-btn" type="button" id="drawerClose" aria-label="Close"><svg><use href="#i-x"/></svg></button>
     </div>
-  </dialog>
+    <div class="tabs" role="tablist">
+      <button type="button" class="active" data-tab="data">Data</button>
+      <button type="button" data-tab="json">JSON</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
 
-  <script src="assets/dashboard.js" defer></script>
+  <div class="tooltip" id="tooltip" hidden></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="assets/dashboard.js"></script>
 </body>
 </html>
-
