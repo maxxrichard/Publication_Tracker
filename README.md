@@ -21,7 +21,7 @@ Research planning, submission, and outcomes—maintained in Excel and published 
 | 2027 | ICLR | **LongMOE** | Sep 25, 2026 | **Submitted** | — | High | Track review cycle |
 | 2027 | ICLR | **CAMOS** | Sep 25, 2026 | **Submitted** | — | High | Track review cycle |
 | 2027 | CVPR | **Segmentation** | Nov 13, 2026<br><sub>45 days left</sub> | **Planned** | Oct | High | Draft and internal review |
-| 2027 | Nature | **INCLAIR** | Dec 20, 2026<br><sub>82 days left</sub> | **Planned** | Nov | High | Draft and internal review |
+| 2027 | Nature MI/ IEEE | **INCLAIR** | Dec 20, 2026<br><sub>82 days left</sub> | **Planned** | Nov | High | Draft and internal review |
 | 2027 | ACL | **MedLLM** | Jan 28, 2027<br><sub>121 days left</sub> | **Planned** | Dec | Medium | Draft and internal review |
 
 ## Accepted publications
