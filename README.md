@@ -1,89 +1,109 @@
 <div align="center">
 
-# Publication Pipeline
+# Publication Tracker
 
-Research planning, submission, and outcomes—maintained in Excel and published automatically.
+**A live dashboard for research submissions, deadlines, and outcomes, maintained in a single Excel workbook.**
 
-[**Open the Excel tracker**](data/publications.xlsx) · [Update instructions](#update-from-excel)
+[![Live dashboard](https://img.shields.io/badge/Live%20dashboard-Open-f46800?style=for-the-badge)](https://maxxrichard.github.io/Publication_Tracker/)
+[![Deploy](https://github.com/maxxrichard/Publication_Tracker/actions/workflows/deploy.yml/badge.svg)](https://github.com/maxxrichard/Publication_Tracker/actions/workflows/deploy.yml)
+
+[**View the dashboard**](https://maxxrichard.github.io/Publication_Tracker/) · [Excel workbook](data/publications.xlsx) · [Updating the data](#updating-the-data)
 
 </div>
 
 <br>
 
-<picture>
-  <img src="assets/publication-dashboard.svg" alt="Publication pipeline dashboard showing eight papers: three accepted, two submitted, and three planned, with the active 2027 pipeline and next deadline." width="100%">
-</picture>
+<a href="https://maxxrichard.github.io/Publication_Tracker/">
+  <img src="assets/dashboard-preview.png" alt="Publication Tracker dashboard with a paper overview table, status charts, deadline gauges and a deadline timeline" width="100%">
+</a>
 
-## Active pipeline
+## Portfolio snapshot
 
-| Cycle | Venue | Paper | Deadline | Status | Target | Priority | Next step |
-|:--:|:--|:--|:--|:--|:--:|:--:|:--|
-| 2027 | ICLR | **LongMOE** | Sep 25, 2026 | **Submitted** | — | High | Track review cycle |
-| 2027 | ICLR | **CAMOS** | Sep 25, 2026 | **Submitted** | — | High | Track review cycle |
-| 2027 | CVPR | **Segmentation** | Nov 13, 2026<br><sub>45 days left</sub> | **Planned** | Oct | High | Draft and internal review |
-| 2027 | Nature MI/ IEEE | **INCLAIR** | Dec 20, 2026<br><sub>82 days left</sub> | **Planned** | Nov | High | Draft and internal review |
-| 2027 | ACL | **MedLLM** | Jan 28, 2027<br><sub>121 days left</sub> | **Planned** | Dec | Medium | Draft and internal review |
+| Papers tracked | Cycles | Accepted | Under review | In preparation | Next deadline |
+|:--:|:--:|:--:|:--:|:--:|:--:|
+| **8** | 2026–2027 | **3** | **2** | **3** | CVPR · Nov 13, 2026 |
 
-## Accepted publications
-
-| Cycle | Venue | Paper | Deadline |
-|:--:|:--|:--|:--|
-| 2026 | AAAI WS | **DiGAN** | Oct 22, 2025 |
-| 2026 | Nature | **MARVIN** | Sep 30, 2025 |
-| 2026 | ICML | **STT-LLM** | May 6, 2025 |
-
-<sub>Data updated **September 27, 2026** · generated from [`data/publications.xlsx`](data/publications.xlsx)</sub>
+<sub>Snapshot generated from [`data/publications.xlsx`](data/publications.xlsx) · data last updated Sep 27, 2026</sub>
 
 
-## Interactive dashboard
+## Overview
 
-The repository root contains a responsive dashboard for GitHub Pages. It reads `data/publications.json`, which is generated from the Excel workbook whenever the site is deployed.
+Publication Tracker turns a single spreadsheet into an interactive dashboard. The Excel workbook is the single source of truth. On every push, a GitHub Action converts it to JSON and redeploys the site to GitHub Pages, so no database or backend is needed.
 
-To publish it, open **Settings → Pages** in GitHub, choose **GitHub Actions** as the source, and run the **Deploy interactive dashboard** workflow. For a local preview, run `python3 -m http.server 8000` and open `http://localhost:8000`.
+### Dashboard features
+
+| Area | What it provides |
+|:--|:--|
+| **Filters** | Filter every panel by cycle, status, type, and venue; the selection is kept in the URL so views can be shared |
+| **Time range** | Deadline windows such as *next 6 months* or *last 12 months*, with pan and zoom controls |
+| **Overview table** | Sortable list of all papers with color-coded time to deadline |
+| **Charts** | Deadlines reached by status, papers per cycle, deadlines per month, venue mix, and priority breakdown; charts can be clicked to drill down |
+| **Pipeline details** | Next deadline, acceptance rate, share of papers with a decision, deadline pressure per paper, status tiles, and next steps |
+| **Timeline** | Every deadline plotted against today, including time spent in review |
+| **Inspection** | Per-paper details and raw JSON, full-screen panel view, and CSV export |
+
+The dashboard supports light and dark themes and works on desktop and mobile.
+
+## Updating the data
+
+1. Edit the **Publications** sheet in [`data/publications.xlsx`](data/publications.xlsx), one paper per row. Use the dropdowns for **Status**, **Priority**, and **Type**.
+2. Commit and push the workbook to `main`.
+3. The [deploy workflow](.github/workflows/deploy.yml) regenerates `data/publications.json` and this README, then publishes the dashboard.
+
+To regenerate locally instead, run `python3 scripts/generate_readme.py` from the repository root.
 
 <details>
-<summary><strong>Update from Excel</strong></summary>
+<summary><strong>Workbook fields</strong></summary>
 
 <br>
 
-1. Open [`data/publications.xlsx`](data/publications.xlsx) and edit the **Publications** sheet.
-2. Keep one paper per row. Use the dropdowns for **Status**, **Priority**, and **Type**.
-3. Run `python3 scripts/generate_readme.py` from the repository root.
-4. Commit both the workbook and regenerated `README.md`.
-
-Pushing a workbook change to the default branch also runs the included GitHub Action, which regenerates and commits the README automatically.
-
-### Workbook fields
-
 | Field | Purpose |
 |:--|:--|
-| Publication Year | Conference or journal cycle used for README grouping |
-| Venue / Type | Destination and publication category |
-| Deadline | Sortable Excel date; use a full year |
+| Publication Year | Conference or journal cycle |
+| Venue / Type | Destination and publication category (conference, journal, workshop) |
+| Deadline | Submission deadline as an Excel date with a full year |
 | Paper Title | Working or final title |
-| Status | Accepted, submitted, in review, revision, planned, on hold, withdrawn, or rejected |
+| Status | Accepted, Submitted, In Review, Revision, Planned, On Hold, Withdrawn, or Rejected |
 | Target Month | Internal target for planned work |
-| Priority / Owner | Accountability and planning |
+| Priority / Owner | Planning and accountability |
 | Next Step | The next concrete action |
-| Paper URL | Optional public paper, preprint, or project link |
-| Notes / Last Updated | Context and freshness |
+| Paper URL | Optional link to the paper, preprint, or project page |
+| Notes / Last Updated | Context and data freshness |
 
-> [!NOTE]
-> Deadline years in the starter workbook were inferred from the supplied publication cycles: the 2026 accepted papers use 2025 deadlines; ICLR, CVPR, and Nature 2027 use 2026 deadlines; ACL 2027 uses a 2027 deadline. Verify these dates before relying on reminders.
+</details>
 
-### Repository layout
+## Local development
+
+The site is static HTML, CSS, and JavaScript. Serve the repository root and open <http://localhost:8000>:
+
+```bash
+python3 -m http.server 8000
+```
+
+Opening `index.html` directly from disk will not work, because the browser blocks loading `data/publications.json` from a file URL.
+
+<details>
+<summary><strong>Repository layout</strong></summary>
+
+<br>
 
 ```text
-data/publications.xlsx          Excel source of truth
-data/publications.json          Generated browser-ready data
-index.html                      Interactive GitHub Pages dashboard
-assets/dashboard.css            Responsive light/dark design system
-assets/dashboard.js             Filters, sorting, analytics, and details
-assets/publication-dashboard.svg Generated visual dashboard
-scripts/generate_readme.py      XLSX-to-Markdown generator (standard library only)
-README.template.md              Human-editable README shell
-README.md                       Generated tracker
-.github/workflows/              Automatic README synchronization
+index.html                    Dashboard page
+assets/dashboard.css          Dashboard styles (dark and light themes)
+assets/dashboard.js           Data loading, filters, charts, and panels
+assets/dashboard-preview.png  Screenshot used in this README
+data/publications.xlsx        Source of truth
+data/publications.json        Generated data consumed by the dashboard
+scripts/generate_readme.py    Excel → JSON and README generator (standard library only)
+README.template.md            README source; edit this, not README.md
+.github/workflows/deploy.yml  Regenerates data and deploys to GitHub Pages
 ```
 
 </details>
+
+> [!NOTE]
+> `README.md` is generated from `README.template.md` on every deployment. Make README changes in the template, or they will be overwritten.
+
+---
+
+<sub>Maintained by Maxx Richard Rahman.</sub>

@@ -25,13 +25,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Regenerate README, JSON and SVG from Excel
+      - name: Regenerate README and JSON from Excel
         run: python3 scripts/generate_readme.py
       - name: Commit generated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md data/publications.json assets/publication-dashboard.svg
+          git add README.md data/publications.json
           git diff --cached --quiet || git commit -m "Regenerate from publications.xlsx" && git push
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
