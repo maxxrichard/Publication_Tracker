@@ -2,9 +2,10 @@
 
 # Publication Pipeline
 
-Research planning, submission, and outcomes are maintained in Excel and published automatically.
+Research planning, submission, and outcomes—maintained in Excel and published automatically.
 
-[**https://maxxrichard.github.io/Publication_Tracker/**](https://maxxrichard.github.io/Publication_Tracker/) 
+[**Open the Excel tracker**](data/publications.xlsx) · [Update instructions](#update-from-excel)
+
 </div>
 
 <br>
@@ -13,8 +14,28 @@ Research planning, submission, and outcomes are maintained in Excel and publishe
   <img src="assets/publication-dashboard.svg" alt="Publication pipeline dashboard showing eight papers: three accepted, two submitted, and three planned, with the active 2027 pipeline and next deadline." width="100%">
 </picture>
 
+## Active pipeline
 
-## Interactive Dashboard
+| Cycle | Venue | Paper | Deadline | Status | Target | Priority | Next step |
+|:--:|:--|:--|:--|:--|:--:|:--:|:--|
+| 2027 | ICLR | **LongMOE** | Sep 25, 2026 | **Submitted** | — | High | Track review cycle |
+| 2027 | ICLR | **CAMOS** | Sep 25, 2026 | **Submitted** | — | High | Track review cycle |
+| 2027 | CVPR | **Segmentation** | Nov 13, 2026<br><sub>45 days left</sub> | **Planned** | Oct | High | Draft and internal review |
+| 2027 | Nature MI/ IEEE | **INCLAIR** | Dec 20, 2026<br><sub>82 days left</sub> | **Planned** | Nov | High | Draft and internal review |
+| 2027 | ACL | **MedLLM** | Jan 28, 2027<br><sub>121 days left</sub> | **Planned** | Dec | Medium | Draft and internal review |
+
+## Accepted publications
+
+| Cycle | Venue | Paper | Deadline |
+|:--:|:--|:--|:--|
+| 2026 | AAAI WS | **DiGAN** | Oct 22, 2025 |
+| 2026 | Nature | **MARVIN** | Sep 30, 2025 |
+| 2026 | ICML | **STT-LLM** | May 6, 2025 |
+
+<sub>Data updated **September 27, 2026** · generated from [`data/publications.xlsx`](data/publications.xlsx)</sub>
+
+
+## Interactive dashboard
 
 The repository root contains a responsive dashboard for GitHub Pages. It reads `data/publications.json`, which is generated from the Excel workbook whenever the site is deployed.
 
@@ -32,7 +53,7 @@ To publish it, open **Settings → Pages** in GitHub, choose **GitHub Actions** 
 
 Pushing a workbook change to the default branch also runs the included GitHub Action, which regenerates and commits the README automatically.
 
-### Workbook Fields
+### Workbook fields
 
 | Field | Purpose |
 |:--|:--|
