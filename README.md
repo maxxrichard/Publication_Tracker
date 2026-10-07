@@ -21,7 +21,7 @@
 
 | Papers tracked | Cycles | Accepted | Under review | In preparation | Next deadline |
 |:--:|:--:|:--:|:--:|:--:|:--:|
-| **8** | 2026–2027 | **3** | **2** | **3** | CVPR · Nov 13, 2026 |
+| **14** | 2026–2027 | **3** | **2** | **9** | CVPR · Nov 13, 2026 |
 
 <sub>Snapshot generated from [`data/publications.xlsx`](data/publications.xlsx) · data last updated Sep 27, 2026</sub>
 
