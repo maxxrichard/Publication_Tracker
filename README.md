@@ -21,7 +21,7 @@
 
 | Papers tracked | Cycles | Accepted | Under review | In preparation | Next deadline |
 |:--:|:--:|:--:|:--:|:--:|:--:|
-| **14** | 2026–2027 | **3** | **4** | **7** | Nature MI/ IEEE · Dec 20, 2026 |
+| **14** | 2026–2027 | **3** | **4** | **7** | ACL · Jan 4, 2027 |
 
 <sub>Snapshot generated from [`data/publications.xlsx`](data/publications.xlsx) · data last updated Sep 27, 2026</sub>
 
